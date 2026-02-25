@@ -12,10 +12,10 @@ def handle_user_images(row_dict):
     # a baby picture and a recent picture
     image_url_1, image_url_2 = row_dict["Photo_url"].split(',')
     country = row_dict["Country"].split(',')[1]
-    name = row_dict["First_name"]
+    first_name, last_name = row_dict["Full_name"].split(' ')
 
     # create folder for each user
-    raw_path, edited_path = create_user_image_folder(name)
+    raw_path, edited_path = create_user_image_folder(first_name)
 
     file_id_1 = extract_file_id(image_url_1)
     file_id_2 = extract_file_id(image_url_2)
@@ -35,9 +35,9 @@ def handle_user_images(row_dict):
     download_image(download_url_1, raw_image_1_path)
     download_image(download_url_2, raw_image_2_path)
 
-    # editing the image
-    edit_image(raw_image_1_path, edited_image_1_path, name, country)
-    edit_image(raw_image_2_path, edited_image_2_path, name, country)
+    # editing the image - pass first_name and last_name separately
+    edit_image(raw_image_1_path, edited_image_1_path, first_name, last_name, country)
+    edit_image(raw_image_2_path, edited_image_2_path, first_name, last_name, country)
 
     return edited_image_1_path, edited_image_2_path
 
@@ -84,6 +84,33 @@ TEXT_COLOR = (255, 255, 255)  # White text
 NAME_FONT_SIZE = 50
 COUNTRY_FONT_SIZE = 45
 HANDLE_FONT_SIZE = 14
+
+
+def get_optimal_name_display(first_name, last_name, font, max_width):
+    """
+    Intelligently selects between full name and first name based on rendered pixel width.
+    
+    Args:
+        first_name: Student's first name
+        last_name: Student's last name
+        font: PIL ImageFont object to measure against
+        max_width: Maximum allowed width in pixels
+    
+    Returns:
+        The name to display (full name if it fits, otherwise first name)
+    """
+    full_name = f"{first_name} {last_name}".title()
+    first_only = first_name.title()
+    
+    # Measure full name width using getbbox
+    bbox = font.getbbox(full_name)
+    full_name_width = bbox[2] - bbox[0]
+    
+    # If full name fits, use it; otherwise fall back to first name
+    if full_name_width <= max_width:
+        return full_name
+    else:
+        return first_only
 
 
 def intelligently_crop_to_square(image_path):
@@ -145,12 +172,14 @@ def intelligently_crop_to_square(image_path):
     return cropped_pil
 
 
-def edit_image(input_path, output_path, name, country):
+def edit_image(input_path, output_path, first_name, last_name, country):
     """
     Edits an image by:
     1. Intelligently cropping to square format
     2. Resizing to fit the layout box within borders
     3. Adding styled text overlays (name, country, minerva tag)
+    
+    Uses intelligent name selection: full name if it fits, otherwise first name only.
     """
     background = Image.open("images/background.png").convert("RGBA")
     bg_w, bg_h = background.size
@@ -164,7 +193,14 @@ def edit_image(input_path, output_path, name, country):
     country_font = ImageFont.truetype("utils\\Playfair_Display\\static\\PlayfairDisplay-ExtraBold.ttf", COUNTRY_FONT_SIZE)
     handle_font = ImageFont.truetype("utils\\Montserrat\\static\\Montserrat-ExtraLight.ttf", HANDLE_FONT_SIZE)
     
-    name_text = name.title()
+    # Maximum allowed width for name (80% of available content width for visual balance)
+    content_left = BORDER_INSET + CONTENT_PADDING
+    content_right = bg_w - BORDER_INSET - CONTENT_PADDING
+    available_width = content_right - content_left
+    MAX_NAME_WIDTH = int(available_width * 0.8)  # 80% of available width
+    
+    # Intelligently select between full name and first name
+    name_text = get_optimal_name_display(first_name, last_name, name_font, MAX_NAME_WIDTH)
     handle_text = "@minervauni2030"
     
     # Calculate text dimensions
@@ -177,7 +213,6 @@ def edit_image(input_path, output_path, name, country):
     handle_h = handle_bbox[3] - handle_bbox[1]
     
     # Calculate content area inside border
-    content_left = BORDER_INSET + CONTENT_PADDING
     content_right = bg_w - BORDER_INSET - CONTENT_PADDING
     content_top = BORDER_INSET + CONTENT_PADDING
     content_bottom = bg_h - BORDER_INSET - CONTENT_PADDING
