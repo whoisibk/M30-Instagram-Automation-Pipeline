@@ -7,6 +7,8 @@
 
 src/__pycache__/
 
-# images
+
 utils/credentials.json
 utils/state.json
+
+images/
