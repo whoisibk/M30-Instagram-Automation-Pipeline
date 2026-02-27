@@ -7,8 +7,7 @@ import cv2
 
 def handle_user_images(row_dict):
     """Handles user images by downloading, editing, and saving them."""
-    # username = row_dict["Instagram username"]
-
+    username = row_dict["Instagram_username"]
     # a baby picture and a recent picture
     image_url_1, image_url_2 = row_dict["Photo_url"].split(',')
     country = row_dict["Country"].split(',')[1]
@@ -258,13 +257,3 @@ def edit_image(input_path, output_path, first_name, last_name, country):
     # Convert to RGB and save
     background = background.convert("RGB")
     background.save(output_path)
-
-
-if __name__ == "__main__":
-    test_row = {
-        "First Name": "Leonardo",
-        "Instagram username": "barry_allen",
-        "Photo_url": "https://drive.google.com/open?id=1WKho9PCTLPEZuNLVvjR0cZ34P2hlaH1F, https://drive.google.com/open?id=1G-6DbC8c9qGNtO5Jhji5IDGoM6KgLo4K",
-        "Country": "Paris, France",
-    }
-    handle_user_images(test_row)

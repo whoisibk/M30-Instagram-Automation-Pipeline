@@ -83,6 +83,3 @@ def save_last_timestamp(ts: datetime):
 
 if __name__ == "__main__":
     forms_pipeline()
-
-
-
