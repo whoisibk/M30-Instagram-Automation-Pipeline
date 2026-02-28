@@ -1,4 +1,19 @@
-## M30 Instagram Post Automation Pipeline
+# M30 Instagram Post Automation Pipeline
+
+## Quick Start
+
+### With Docker (Recommended)
+```bash
+docker-compose up
+```
+
+### With Python (Local Development)
+```bash
+python -m venv .venv
+source .venv/Scripts/activate  # Windows bash
+pip install -r requirements.txt
+python -m src.main
+```
 
 ## Overview
 
@@ -71,15 +86,36 @@ Organizes outputs by student
 Prepares captions for publishing
 
 Project Structure
+```
 project/
+├── Dockerfile          # Container configuration
+├── docker-compose.yml  # Docker Compose setup
+├── requirements.txt    # Python dependencies
+├── pytest.ini          # pytest configuration
+├── .gitignore          # Git ignore rules
 │
-├── pipeline.py          # Main orchestration logic
-├── images.py            # Image processing and formatting
-├── sheets_api.py        # Google Sheets data retrieval
-├── templates/           # Post templates and assets
-├── sample_data/         # Placeholder example data
-├── output/              # Generated posts
+├── src/
+│   ├── main.py         # Entry point
+│   ├── insta.py        # Instagram posting logic
+│   ├── images.py       # Image processing
+│   └── sheets.py       # Google Sheets integration
+│
+├── tests/
+│   └── test_insta.py   # Test suite
+│
+├── utils/
+│   ├── credentials.json  # (excluded from git) API credentials
+│   ├── session.json      # (excluded from git) Instagram session
+│   ├── state.json        # (excluded from git) Script state
+│   └── fonts/            # Font files for image processing
+│
+├── [Student Folders]/    # Per-student organized outputs
+│   ├── Ayaan/
+│   ├── Leonardo/
+│   └── ...
+│
 └── README.md
+```
 
 ## Key Features
 
@@ -94,6 +130,103 @@ Modular and extensible architecture
 Organized per-student output storage
 
 Error handling for incomplete submissions
+
+---
+
+## Setup & Installation
+
+### Prerequisites
+- **Docker approach**: Docker and Docker Compose
+- **Local approach**: Python 3.11+, pip
+
+### Environment Variables
+Create a `.env` file in the project root:
+```
+IG_USERNAME=your_instagram_username
+IG_PASSWORD=your_instagram_password
+GOOGLE_FORMS_SHEET_ID=your_sheet_id
+SESSION_FILE=/app/utils/session.json
+STATE_PATH=/app/utils/state.json
+```
+
+### Installation
+
+**Option 1: Docker (Recommended)**
+```bash
+docker-compose up
+```
+- No Python installation needed
+- Automatic dependency installation
+- Runs in isolated container
+- See [DOCKER.md](DOCKER.md) for detailed instructions
+
+**Option 2: Local Python Setup**
+```bash
+# Create virtual environment
+python -m venv .venv
+
+# Activate (Windows bash / Git Bash)
+source .venv/Scripts/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the script
+python -m src.main
+```
+
+---
+
+## Testing
+
+Run the test suite:
+```bash
+# From project root with venv activated
+pytest tests/test_insta.py -v
+```
+
+**Current Status**: All 8 tests passing ✅
+- Tests for Instagram post uploading with tags and location
+- Tests for image album posting
+- Geolocation validation tests
+
+---
+
+## Git & GitHub
+
+### What NOT to Push
+The `.gitignore` file automatically excludes sensitive files:
+- `.env` - Contains API credentials and passwords
+- `utils/credentials.json` - Private API keys
+- `utils/session.json` - Instagram login session
+- `utils/state.json` - Script runtime state
+- `.venv/` - Virtual environment (large)
+- `__pycache__/` - Python cache files
+
+### Safe to Push
+- `Dockerfile` and `docker-compose.yml`
+- `src/`, `tests/` directories
+- `requirements.txt`
+- This README and documentation
+- `.gitignore`
+- Image subdirectories (without sensitive content)
+
+### Push to GitHub
+```bash
+git init
+git add .
+git commit -m "Initial commit: Instagram automation pipeline"
+git branch -M main
+git remote add origin https://github.com/yourusername/repo-name.git
+git push -u origin main
+```
+
+Anyone cloning your repo will need to:
+1. Create their own `.env` file with credentials
+2. Run `docker-compose up` or local installation
+3. All data stays private on their machine
+
+---
 
 ## Performance & Impact
 
@@ -127,10 +260,29 @@ All personal content used in deployment remains private.
 
 Tech Stack
 
-Python
+**Runtime**
+- Python 3.11
+- Docker & Docker Compose (containerization)
 
-Pillow (PIL) for image processing
+**Image Processing**
+- Pillow (PIL) - Image manipulation
+- MoviePy - Video processing
+- OpenCV - Computer vision
+- ImageIO - Image I/O
 
-Google Sheets API
+**API & Web**
+- Instagrapi - Instagram API wrapper
+- Google Sheets API - Data retrieval
+- Requests - HTTP client
+- python-dotenv - Environment variable management
 
-Requests
+**Geolocation**
+- geopy - Geographic coordinate lookup (Nominatim)
+
+**Testing & Quality**
+- pytest - Test framework
+- pytest-mock - Mocking for tests
+
+**Utilities**
+- tqdm - Progress bars
+- Pydantic - Data validation
