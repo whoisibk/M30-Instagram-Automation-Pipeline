@@ -39,8 +39,8 @@ def main():
 
         row_dict = dict(zip(headers, row))
 
-    if process_form_row(row_dict, insta_client):
-        posts_made += 1
+        if process_form_row(row_dict, insta_client):
+            posts_made += 1
 
     logger.info(f"Pipeline completed. Posts made: {posts_made}")
     print(f"\nPipeline completed. Total posts made: {posts_made}")
