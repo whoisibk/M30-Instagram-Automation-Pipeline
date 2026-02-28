@@ -13,4 +13,6 @@ utils/credentials.json
 utils/state.json
 utils/session.json 
 
+.pytest_cache/
+
 images/
