@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  insta-bot:
+    build: .
+    container_name: m30-insta-script
+    
+    # Load environment variables from .env file
+    env_file:
+      - .env
+    
+    # Mount volumes for persistent data
+    volumes:
+      # Credentials and state files
+      - ./utils:/app/utils
+      # Downloaded/processed images
+      - ./images:/app/images
+
+    # Environment variables (can also be overridden in .env)
+    environment:
+      SESSION_FILE: /app/utils/session.json
+      STATE_PATH: /app/utils/state.json
+    
+    # Restart policy (optional)
+    restart: "no"
