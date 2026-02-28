@@ -75,7 +75,7 @@ def process_form_row(row_dict: dict, client: Client) -> bool:
         first_name = full_name.split(" ")[0]
         username = row_dict.get("Instagram_username", "")
         location = row_dict["Country"]
-        caption = row_dict.get("Caption", "")
+        caption = row_dict.get("Caption", "").replace('\\n', '\n').replace('\\t', '\t')
 
         logger.info(f"Processing post for: {full_name} (@{username})")
         print(f"\n{'='*50}")
