@@ -220,36 +220,8 @@ pytest tests/test_insta.py -v
 
 ---
 
-## Git & GitHub
 
-### What NOT to Push
-The `.gitignore` file automatically excludes sensitive files:
-- `.env` - Contains API credentials and passwords
-- `utils/credentials.json` - Private API keys
-- `utils/session.json` - Instagram login session
-- `utils/state.json` - Script runtime state
-- `.venv/` - Virtual environment (large)
-- `__pycache__/` - Python cache files
-
-### Safe to Push
-- `Dockerfile` and `docker-compose.yml`
-- `src/`, `tests/` directories
-- `requirements.txt`
-- This README and documentation
-- `.gitignore`
-- Image subdirectories (without sensitive content)
-
-### Push to GitHub
-```bash
-git init
-git add .
-git commit -m "Initial commit: Instagram automation pipeline"
-git branch -M main
-git remote add origin https://github.com/yourusername/repo-name.git
-git push -u origin main
-```
-
-Anyone cloning your repo will need to:
+Anyone cloning this repo will need to:
 1. Create their own `.env` file with credentials
 2. Run `docker-compose up` or local installation
 3. All data stays private on their machine
