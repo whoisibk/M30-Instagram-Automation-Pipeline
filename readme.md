@@ -31,6 +31,34 @@ via Google Forms. The pipeline retrieves submissions, processes the images into 
 
 The goal was to eliminate repetitive manual editing, ensure visual consistency, and create a scalable workflow for handling multiple student submissions efficiently.
 
+## Examples
+
+### Image Processing Pipeline
+
+The pipeline transforms raw student photos into branded Instagram posts with consistent formatting:
+
+<table>
+<tr>
+<td align="center"><b>Original Image</b></td>
+<td align="center"><b>Processed Result</b></td>
+</tr>
+<tr>
+<td><img src="images/Leonardo/raw/1WKho9PCTLPEZuNLVvjR0cZ34P2hlaH1F.jpg" width="300"/></td>
+<td><img src="images/Leonardo/edited/baby_edited.jpg" width="300"/></td>
+</tr>
+</table>
+
+**Processing steps:**
+- Downloads images from Google Forms submissions
+- Resizes while preserving aspect ratio (no distortion)
+- Applies branded template with consistent layout
+- Centers images and maintains quality
+- Outputs Instagram-ready posts
+
+### See It Live
+
+Check out the final posts on Instagram: [**@minervauni2030**](https://www.instagram.com/minervauni2030/?hl=en)
+
 ## Problem Statement
 
 The Minerva Class of 2030 needed a structured and consistent way to generate Instagram posts for their cohort. Manually editing and formatting each post would have been time-consuming and error-prone.
