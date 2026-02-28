@@ -7,8 +7,10 @@
 
 src/__pycache__/
 
+tests/__pycache__/
 
 utils/credentials.json
 utils/state.json
+utils/session.json 
 
 images/
