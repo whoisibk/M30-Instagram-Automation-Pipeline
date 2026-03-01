@@ -8,9 +8,16 @@ def handle_user_images(row_dict):
     """Handles user images by downloading, editing, and saving them."""
     username = row_dict["Instagram_username"]
     # a baby picture and a recent picture
-    image_url_1, image_url_2 = row_dict["Photo_url"].split(",")
-    country = row_dict["Country"].split(",")[1]
-    first_name, last_name = row_dict["Full_name"].split(" ")
+    photo_urls = row_dict["Photo_url"].split(",")
+    image_url_1 = photo_urls[0].strip()
+    image_url_2 = photo_urls[1].strip() 
+    
+    country = row_dict["Country"].split(",")[1].strip()
+    
+    # Handle names with multiple spaces or parts
+    name_parts = row_dict["Full_name"].split()
+    first_name = name_parts[0]
+    last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
 
     # create folder for each user
     raw_path, edited_path = create_user_image_folder(first_name)
