@@ -3,9 +3,17 @@ from dotenv import load_dotenv
 
 from instagrapi import Client
 from instagrapi.types import Usertag, UserShort
-from instagrapi.exceptions import LoginRequired
+from instagrapi.exceptions import LoginRequired, ChallengeRequired
+from instagrapi.mixins.challenge import ChallengeChoice
 from geopy.geocoders import Nominatim
 import logging
+import random
+import imaplib
+import email
+import re
+import time
+
+from src.insta_security import change_password_handler, challenge_code_handler
 
 logger = logging.getLogger()
 
@@ -14,6 +22,8 @@ load_dotenv()
 USERNAME = getenv("IG_USERNAME")
 PASSWORD = getenv("IG_PASSWORD")
 SESSION_FILE = getenv("SESSION_FILE")
+CHALLENGE_EMAIL = getenv("CHALLENGE_EMAIL")
+CHALLENGE_PASSWORD = getenv("CHALLENGE_PASSWORD")
 
 
 def login_user() -> Client:
@@ -27,6 +37,10 @@ def login_user() -> Client:
 
     if not USERNAME or not PASSWORD:
         raise Exception("Username and password must be set in .env file")
+    
+    # Register challenge handlers
+    cl.change_password_handler = change_password_handler
+    cl.challenge_code_handler = challenge_code_handler
 
     # Only try to load session if file exists
     if path.exists(SESSION_FILE):
@@ -56,8 +70,11 @@ def login_user() -> Client:
 
                 cl.login(USERNAME, PASSWORD)
             login_via_session = True
+        except ChallengeRequired as e:
+            logger.error("Challenge required during session login: %s" % e)
+            logger.error("Please complete the challenge manually at: https://www.instagram.com/")
         except Exception as e:
-            logger.info("Couldn't login user using session information: %s" % e)
+            logger.error("Couldn't login user using session information: %s" % e)
 
     if not login_via_session:
         try:
@@ -67,7 +84,25 @@ def login_user() -> Client:
             if cl.login(USERNAME, PASSWORD):
                 login_via_pw = True
         except Exception as e:
-            logger.info("Couldn't login user using username and password: %s" % e)
+            error_msg = str(e)
+            
+            # Check if it's the unknown STEP_NAME challenge
+            if "Unknown step_name" in error_msg or "STEP_NAME" in error_msg:
+                logger.error("=" * 80)
+                logger.error("Instagram is blocking login with an unrecognized challenge.")
+                logger.error("This requires MANUAL intervention:")
+                logger.error("")
+                logger.error("1. Go to https://www.instagram.com/")
+                logger.error("2. Login with username: %s" % USERNAME)
+                logger.error("3. Complete any challenges/verifications Instagram shows")
+                logger.error("4. Once logged in successfully on web, DELETE this file:")
+                logger.error("   %s" % SESSION_FILE)
+                logger.error("5. Run this script again")
+                logger.error("=" * 80)
+                raise Exception("Instagram challenge required - complete manually on web browser")
+            
+            logger.error("Couldn't login user using username and password: %s" % e)
+            raise  # Re-raise to see the full error
 
     if not login_via_pw and not login_via_session:
         raise Exception("Couldn't login user with either password or session")
